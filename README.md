@@ -1,59 +1,64 @@
-# MegaMetal Spring Selection
+# MegaMetal Spring Selection App
 
-An offline mobile application developed during Selhan Coşkun's electrical-electronics engineering internship at Mega Metal in Kayseri. It turns a machine-card calculation into a simple workflow: select the machine, enter the wire count and single-wire diameter, and view the winding tension and, for NIEHOFF D632, the recommended dancer spring.
+I started this project during my summer internship at Mega Metal in Kayseri. I am an Electrical-Electronics Engineering student at Abdullah Gül University.
 
-**Türkçe:** Mega Metal stajı kapsamında geliştirilen cambaz yayı seçimi ve sarım gerilimi hesaplama uygulaması. Operatör yalnızca makineyi, tel sayısını ve tek tel çapını seçer veya girer; hesaplama cihaz üzerinde yapılır.
+During my internship, I saw that choosing the correct dancer spring could be difficult for machine operators. I wanted to make a simple app that could help with this task. The operator enters the wire count and the diameter of one wire. The app then calculates the winding tension and shows the spring number for the NIEHOFF D632 machine.
 
-## Application preview
+I first worked on the calculation with Python and made a basic screen with Kivy. Later, I made the mobile version with Flutter and Dart.
+
+## Screenshots
 
 <p>
-  <img src="docs/screenshots/machine-selection.png" alt="MegaMetal machine selection screen with NIEHOFF D632 and SAMP" width="280" />
-  <img src="docs/screenshots/spring-result.png" alt="NIEHOFF D632 calculation showing spring number 2 and winding tension of 38.75 N" width="280" />
+  <img src="docs/screenshots/machine-selection.png" alt="Machine selection screen" width="280" />
+  <img src="docs/screenshots/spring-result.png" alt="Calculation result showing Spring No. 2" width="280" />
 </p>
 
-Screenshots were captured from the project running in the iPhone Simulator.
+These screenshots are from the app running in the iPhone Simulator.
 
-## Purpose and scope
+## What the app does
 
-The project addresses a spring-selection problem observed during the internship: operators could choose an unsuitable dancer spring when interpreting the calculation manually. The application makes the calculation repeatable and displays its result clearly.
+The app has two machine options:
 
-| Machine | Output |
+| Machine | Result |
 | --- | --- |
-| NIEHOFF D632 | Conductor cross-section, coefficient, winding tension, spring number and dimensions |
-| SAMP | Conductor cross-section, coefficient and winding tension |
+| NIEHOFF D632 | Wire cross-section, winding tension, spring number and spring size |
+| SAMP | Wire cross-section and winding tension |
 
-The repository contains the software component of the internship. The bobbin scrap and spring replacement-period Kaizen studies are separate activities. This application does not estimate spring fatigue life or establish a replacement interval.
+The app works without an internet connection. Its screens are in Turkish because I prepared it for the operators at the factory.
 
-## Features
+The main features are:
 
-- Offline calculation without a server or user account.
-- Turkish interface with machine selection and a short usage guide.
-- Two calculation inputs: wire count and single-wire diameter in millimetres.
-- Decimal comma and decimal point support, with automatic input normalization.
-- Input filtering and messages for missing or invalid values.
-- Large, colour-coded spring results and spring dimensions.
-- A warning instead of a spring recommendation outside the defined 4–100 N range.
-- Clear/new calculation button, back button and swipe navigation.
+- A machine selection screen and a short use guide.
+- Two input fields: wire count and single-wire diameter in mm.
+- Support for both a comma and a point, such as `0,30` and `0.30`.
+- Messages for empty or incorrect values.
+- A large, coloured result card.
+- A clear button to start a new calculation.
+- A back button to return to machine selection.
 
-## Development history
+## How I developed the project
 
-1. **Python:** the calculation was implemented separately from the user interface and checked with unit tests.
-2. **Kivy:** a Python interface prototype connected the inputs to the calculation engine.
-3. **Flutter and Dart:** the mobile application was rebuilt with machine selection, validation, navigation and branded assets. The final mobile calculation runs in Dart; it does not call a Python backend.
+I began by learning basic Python topics, such as variables, conditions and functions. I used these topics to write the calculation in `calculator.py`. I kept this file separate from the screen code so that I could test the calculation more easily.
 
-The mobile application has been run in the iOS Simulator. Android platform files are included, but a completed Android device or emulator validation is not claimed here.
+Then I used Kivy to make the first version of the screen. This version helped me connect the input fields and the calculation button to the Python function.
 
-## Calculation method
+After that, I moved to Flutter and Dart for the mobile version. I added the machine selection page, input checks, result cards and the Mega Metal logo. The Flutter app does its own calculations in Dart. It does not need the Python program to run.
 
-The implementation follows the machine-card procedure used in this project:
+I ran the mobile app in the iOS Simulator. The project also includes Android files, but I have not finished checking it on an Android device.
+
+## Calculation
+
+I used the calculation method from the machine card:
 
 ```text
-raw cross-section = wire count × single-wire diameter² × 3.14 / 4
-cross-section     = floor(raw cross-section × 100) / 100
-winding tension   = cross-section × selected coefficient
+Raw cross-section = wire count × single-wire diameter² × 3.14 / 4
+Cross-section     = floor(raw cross-section × 100) / 100
+Winding tension   = cross-section × coefficient
 ```
 
-Cross-section is truncated to two decimal places before the tension calculation. The coefficient is selected from the largest reference cross-section that does not exceed the calculated value. Below the first reference, the implementation uses the first coefficient.
+Cross-section means the total area of the wires, in mm². Before calculating the tension, the program keeps two decimal places and removes the extra digits. For example, `1.5543` becomes `1.55`.
+
+The program uses the table below to choose a coefficient. It takes the largest reference value that is equal to or smaller than the calculated cross-section. If the result is below `0.09 mm²`, it uses the first row.
 
 | Reference cross-section (mm²) | Coefficient (N/mm²) |
 | ---: | ---: |
@@ -66,36 +71,34 @@ Cross-section is truncated to two decimal places before the tension calculation.
 | 4.00 | 20 |
 | 6.00 | 16 |
 
-For NIEHOFF D632, the project uses these non-overlapping selection intervals:
+For NIEHOFF D632, I used these spring ranges:
 
-| Winding tension | Spring | Dimensions shown in the application |
+| Winding tension | Spring number | Spring size |
 | --- | --- | --- |
-| 4 ≤ F < 10 N | No. 1 | Ø0.8 × Ø8.80 × 55.5 mm |
-| 10 ≤ F < 80 N | No. 2 | Ø1.25 × Ø13.70 × 65.2 mm |
-| 80 ≤ F ≤ 100 N | No. 3 | Ø1.60 × Ø12.7 × 68.0 mm |
-| F < 4 N or F > 100 N | No recommendation | Consult the responsible engineer |
+| 4 ≤ F < 10 N | 1 | Ø0.8 × Ø8.80 × 55.5 mm |
+| 10 ≤ F < 80 N | 2 | Ø1.25 × Ø13.70 × 65.2 mm |
+| 80 ≤ F ≤ 100 N | 3 | Ø1.60 × Ø12.7 × 68.0 mm |
 
-These values describe this project's configured rules, rather than a general spring-selection specification for all machines. The application provides calculation support and has no connection to a machine controller.
+If the tension is below 4 N or above 100 N, the app does not suggest a spring. It asks the user to contact the responsible engineer. These rules are for this project and should not be used for every machine.
 
-### Worked example
+### Example
+
+For 22 wires with a single-wire diameter of 0.30 mm:
 
 ```text
-Machine:               NIEHOFF D632
-Wire count:            22
-Single-wire diameter:  0.30 mm
-Cross-section:         1.55 mm²
-Coefficient:           25 N/mm²
-Winding tension:       38.75 N
-Recommended spring:    No. 2
+Cross-section:      1.55 mm²
+Coefficient:        25 N/mm²
+Winding tension:    38.75 N
+Spring number:      2
 ```
 
-For SAMP, the same inputs produce the same cross-section and tension without a spring recommendation.
+SAMP gives the same cross-section and tension for these inputs, but it does not give a spring number.
 
-## Run the Flutter application
+## Run the mobile app
 
-Use a Flutter SDK containing Dart 3.9 or later, with the tools required for the target platform. iOS development requires macOS and Xcode; Android development requires the Android SDK.
+You need Flutter with Dart 3.9 or later. For iOS, you also need a Mac and Xcode. For Android, you need the Android SDK.
 
-From the repository root:
+Open a terminal in the main project folder and run:
 
 ```bash
 cd mobile
@@ -104,17 +107,17 @@ flutter devices
 flutter run
 ```
 
-If multiple devices are available, use `flutter run -d <device-id>`. The Flutter SDK and local platform SDKs are not included in this repository.
+If there is more than one device, choose one with `flutter run -d <device-id>`.
 
-## Run the Python prototype
+## Run the Python version
 
-The calculation engine can be tested with Python 3.10 or later, without installing Kivy:
+You can check the Python calculation with Python 3.10 or later. This test does not need Kivy:
 
 ```bash
 python3 -m unittest -v
 ```
 
-To run the Kivy interface, use a Python version supported by the installed Kivy release. Python 3.12 is a suitable environment for this prototype:
+To open the first screen version, you also need Kivy. Use a Python version that works with your Kivy version. For example, you can set up Python 3.12 like this:
 
 ```bash
 python3.12 -m venv .venv
@@ -123,42 +126,46 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
-On Windows, activate the environment with `.venv\Scripts\activate`.
+On Windows, use `.venv\Scripts\activate` to activate the environment.
 
 ## Tests
 
-```bash
-# Python calculation tests, from the repository root
-python3 -m unittest -v
+I used tests to check the example above and some possible input problems.
 
-# Flutter calculation and widget tests
+The four Python tests check the example, spring limits, a result outside the spring range and an incorrect input. The three Flutter tests check the D632 example, the SAMP result and the machine selection screen.
+
+To run the Flutter tests:
+
+```bash
 cd mobile
 flutter pub get
 flutter test
 ```
 
-The Python tests cover the machine-card example, spring interval boundaries, out-of-range results and an invalid input. Flutter tests cover the D632 example, the SAMP calculation and the initial machine-selection screen. These checks verify the listed software behaviours; they do not measure factory scrap reduction or validate a spring's physical service life.
+These tests check the software. They do not show how much scrap the app could reduce in the factory.
 
-## Repository structure
+## Main files
 
-```text
-.
-├── calculator.py             # Python calculation engine
-├── app.py                    # Kivy interface prototype
-├── test_calculator.py        # Python unit tests
-├── requirements.txt          # Kivy dependency
-├── mobile/
-│   ├── lib/main.dart         # Flutter interface and Dart calculation
-│   ├── test/                 # Flutter calculation and widget tests
-│   ├── assets/               # Application logos and icon source
-│   └── ...                   # Flutter platform projects
-└── docs/screenshots/         # iOS Simulator screenshots
-```
+| File or folder | What it contains |
+| --- | --- |
+| `calculator.py` | Python calculation |
+| `app.py` | First screen version made with Kivy |
+| `test_calculator.py` | Python tests |
+| `requirements.txt` | Python package needed for the screen |
+| `mobile/lib/main.dart` | Flutter screens and Dart calculation |
+| `mobile/test/` | Flutter tests |
+| `mobile/assets/` | Logo and app icon images |
+| `docs/screenshots/` | Screenshots from the iPhone Simulator |
 
-## Academic context and attribution
+## What I learned
 
-**Author:** Selhan Coşkun, Electrical-Electronics Engineering, Abdullah Gül University.
+This project helped me understand how a problem in production can become a small software project. I practised using formulas in code, checking user inputs, writing tests and making a simple mobile screen. I also learned why a clear result is important for the person using the app.
 
-Prepared as the source-code companion to the Mega Metal summer internship project. The repository can be linked from the final report's appendix. Daily activity forms, the final report and company presentation files are not included.
+In a future version, I would like to add a calculation history, more machines and QR code input. The current app selects a spring from the given rules. It does not calculate spring life or control the machine.
 
-Mega Metal branding belongs to its respective owner. This repository documents a student internship project and does not represent an official company software release.
+## About this project
+
+**Selhan Coşkun**  
+Electrical-Electronics Engineering, Abdullah Gül University
+
+This repository contains the app from my Mega Metal summer internship. The daily activity form, final report and Kaizen presentations are kept separately. The Mega Metal name and logo belong to the company. This is my student project, not an official company app.

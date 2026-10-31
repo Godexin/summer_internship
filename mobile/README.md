@@ -1,10 +1,14 @@
-# MegaMetal Flutter Application
+# MegaMetal Mobile App
 
-The Flutter/Dart implementation of the dancer-spring selection and winding-tension calculator. See the [main project README](../README.md) for the project background, screenshots, calculation rules and the earlier Python/Kivy prototype.
+This folder contains the mobile version of my internship project. I made it with Flutter and Dart after working on the first Python and Kivy version.
 
-## Run
+The app has two options. NIEHOFF D632 shows the winding tension and a spring number. SAMP shows the winding tension. Both options work without an internet connection.
 
-From this directory, using a Flutter SDK with Dart 3.9 or later:
+You can find the project story, calculation tables and screenshots in the [main README](../README.md).
+
+## Run the app
+
+You need Flutter with Dart 3.9 or later. Open a terminal in this folder and run:
 
 ```bash
 flutter pub get
@@ -12,12 +16,15 @@ flutter devices
 flutter run
 ```
 
-## Test
+## Run the tests
 
 ```bash
 flutter test
 ```
 
-The main application is in [`lib/main.dart`](lib/main.dart). Calculation tests are in [`test/calculation_test.dart`](test/calculation_test.dart), and the machine-selection screen test is in [`test/widget_test.dart`](test/widget_test.dart).
+## Main files
 
-NIEHOFF D632 mode calculates winding tension and recommends a spring. SAMP mode calculates winding tension without selecting a spring. Both modes work offline.
+- [`lib/main.dart`](lib/main.dart): the app screens and calculation code.
+- [`test/calculation_test.dart`](test/calculation_test.dart): tests for the D632 and SAMP calculations.
+- [`test/widget_test.dart`](test/widget_test.dart): a test for the machine selection screen.
+- `assets/`: the logo and app icon images.

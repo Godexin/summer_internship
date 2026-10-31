@@ -1,0 +1,28 @@
+name: cambaz_yay_secimi
+description: 630'luk büküm makineleri için çevrimdışı cambaz yay seçimi.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/mega_metal_logo_transparent.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/mega_metal_app_icon.png
+  remove_alpha_ios: true

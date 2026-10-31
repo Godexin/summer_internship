@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+build/
+bin/
+
+# Local development environments and bundled SDK
+.venv/
+venv/
+flutter-sdk/
+.pytest_cache/
+.idea/
+.vscode/
+tmp/
+
+# Internship documents remain local
+*.docx
+*.pdf
+*.pptx
+*.xlsx
+
+# Local configuration, credentials and signing material
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+key.properties
+local.properties
+
+# Prepared distribution archives
+*.zip
